@@ -32,7 +32,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
 
-    api = GrowattBattery.withLogin(data["username"], data["password"])
+    api = await GrowattBattery.with_login(data["username"], data["password"])
 
     if api is None:
         raise InvalidAuth

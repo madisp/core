@@ -2047,8 +2047,8 @@ regenmaschine==2022.01.0
 # homeassistant.components.renault
 renault-api==0.1.9
 
-# homeassistant.components.growatt_setter
-requests==2.0
+# homeassistant.components.growatt_battery
+requests==2.27.1
 
 # homeassistant.components.python_script
 restrictedpython==5.2

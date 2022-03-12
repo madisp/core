@@ -2,9 +2,7 @@
   "domain": "growatt_battery",
   "name": "Growatt battery controller",
   "config_flow": true,
-  "requirements": [
-    "requests==2.27.1"
-  ],
+  "requirements": [],
   "ssdp": [],
   "zeroconf": [],
   "homekit": {},

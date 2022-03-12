@@ -2,10 +2,12 @@
 A bunch of helper methods to interface with Growatt's http APIs.
 """
 
+import aiohttp
 import json
-import requests
-from urllib.parse import quote
-from urllib.parse import quote_plus
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from urllib.parse import quote, quote_plus
+from yarl import URL
 
 
 GROWATT_DOMAIN = "server.growatt.com"
@@ -14,18 +16,23 @@ TCP_SET_URL = f"https://{GROWATT_DOMAIN}/tcpSet.do"
 
 
 class GrowattBattery:
-    def __init__(self, session):
-        self.session = session
+    """
+    A bunch of helper methods to control the charge/discharge times of a battery connected
+    to a Growatt inverter.
+    """
 
-    def login(self, username, password):
+    def __init__(self, client: aiohttp.ClientSession) -> None:
+        self.client = client
+
+    async def login(self, username, password) -> bool:
         """
         Attempt to login with the provided username and password, return false if fails
         """
         data = {"account": username, "password": password}
-        resp = self.session.post(LOGIN_URL, data=data)
+        resp = await self.client.post(LOGIN_URL, data=data)
         return resp.status_code >= 200 and resp.status_code < 300
 
-    def setTimes(self, plant, device, charge_start, discharge_start):
+    async def set_times(self, plant, device, charge_start, discharge_start) -> bool:
         """
         Set the charge and discharge times for the battery, based on hours 0-23.
         """
@@ -36,17 +43,16 @@ class GrowattBattery:
             [{"key": plant, "value": "mix%" + device}]
         ).replace(" ", "")
 
-        self.session.cookies.set("selectedPlantId", plant, domain=GROWATT_DOMAIN)
-        self.session.cookies.set(
-            "memoryDeviceType",
-            quote_plus(memory_device_type),
-            domain=GROWATT_DOMAIN,
-        )
-        self.session.cookies.set(
-            "memoryDeviceSn", quote(memory_device_sn), domain=GROWATT_DOMAIN
+        self.client.cookie_jar.update_cookies(
+            {
+                "selectedPlantId": plant,
+                "memoryDeviceType": quote_plus(memory_device_type),
+                "memoryDeviceSn": quote(memory_device_sn),
+            },
+            URL(TCP_SET_URL),
         )
 
-        resp = self.session.post(
+        resp = await self.client.post(
             TCP_SET_URL,
             data={
                 "action": "mixSet",
@@ -75,13 +81,15 @@ class GrowattBattery:
         return resp.status_code >= 200 and resp.status_code < 300
 
     @staticmethod
-    def withLogin(username, password):
+    async def with_login(
+        hass: HomeAssistant, username: str, password: str
+    ) -> GrowattBattery:
         """
         Create a new GrowattBattery instance using the provided credentials
         """
-        api = GrowattBattery(requests.Session())
+        api = GrowattBattery(async_get_clientsession(hass))
 
-        if not api.login(username, password):
+        if not await api.login(username, password):
             return None
 
         return api
