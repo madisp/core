@@ -395,6 +395,7 @@ homeassistant/components/group/* @home-assistant/core
 tests/components/group/* @home-assistant/core
 homeassistant/components/growatt_server/* @indykoning @muppet3000 @JasperPlant
 tests/components/growatt_server/* @indykoning @muppet3000 @JasperPlant
+homeassistant/components/growatt_battery/* @madisp
 homeassistant/components/guardian/* @bachya
 tests/components/guardian/* @bachya
 homeassistant/components/habitica/* @ASMfreaK @leikoilja

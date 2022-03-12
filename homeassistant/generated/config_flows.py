@@ -130,6 +130,7 @@ FLOWS = [
     "gree",
     "group",
     "growatt_server",
+    "growatt_battery",
     "guardian",
     "habitica",
     "hangouts",

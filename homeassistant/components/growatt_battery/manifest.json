@@ -1,0 +1,16 @@
+{
+  "domain": "growatt_battery",
+  "name": "Growatt battery controller",
+  "config_flow": true,
+  "requirements": [
+    "requests==2.27.1"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@madisp"
+  ],
+  "iot_class": "assumed_state"
+}
